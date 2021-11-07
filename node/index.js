@@ -5,6 +5,15 @@ const StringDecoder = require("string_decoder").StringDecoder;
 const hostname = '127.0.0.1';
 const port = 4000;
 
+let recursos = {
+    mascotas: [
+        {tipo:"perro",nombre:"pancho",dueno:"Jhon"},
+        {tipo:"perro",nombre:"pancho",dueno:"Jhon"},
+        {tipo:"perro",nombre:"pancho",dueno:"Jhon"},
+        {tipo:"perro",nombre:"pancho",dueno:"Jhon"},
+    ]
+}
+
 const server = http.createServer((req, res) => {
     res.statusCode = 200;
     
@@ -49,8 +58,8 @@ const server = http.createServer((req, res) => {
 
         //3.6 elegir el manejo de la respuesta/handle
         let handler;
-        if(rutaLimpia && enrutador[rutaLimpia] ){
-            handler = enrutador[rutaLimpia];
+        if(rutaLimpia && enrutador[rutaLimpia] && enrutador[rutaLimpia][metodo] ){
+            handler = enrutador[rutaLimpia][metodo];
         }else{
             handler = enrutador.noEncontrada;
         }
@@ -73,9 +82,17 @@ const enrutador = {
     ruta: (data, callback) => {
         callback(200, {mensaje: 'esta es /ruta'});
     },
+    /* 
     usuarios: (data, callback) => {
         callback(200, [{nombre: 'usuario1'},{nombre: 'usuario2'}]);
     },
+    */
+    mascotas: {
+        get: (data, callback) => {
+        callback(200, recursos.mascotas);
+        }
+    },
+
     noEncontrada: (data, callback) => {
         callback(404, {mensaje: 'ruta no encontrada'});
     }
