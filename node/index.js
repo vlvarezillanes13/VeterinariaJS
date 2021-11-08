@@ -47,6 +47,10 @@ const server = http.createServer((req, res) => {
     req.on('end', () => {
         buffer += decoder.end();
 
+        if (headers["content-type"] === "application/json"){
+            buffer = JSON.parse(buffer);
+        }
+
         //3.5 ordenar la data
         const data = {
             ruta: rutaLimpia,
@@ -56,6 +60,7 @@ const server = http.createServer((req, res) => {
             payload :  buffer
         };
 
+        console.log({data});
         //3.6 elegir el manejo de la respuesta/handle
         let handler;
         if(rutaLimpia && enrutador[rutaLimpia] && enrutador[rutaLimpia][metodo] ){
@@ -90,7 +95,11 @@ const enrutador = {
     mascotas: {
         get: (data, callback) => {
         callback(200, recursos.mascotas);
-        }
+        },
+        post: (data, callback) => {
+            recursos.mascotas.push(data.payload);
+            callback(201, data.payload);
+            }
     },
 
     noEncontrada: (data, callback) => {
