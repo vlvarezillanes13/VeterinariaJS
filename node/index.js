@@ -1,11 +1,13 @@
 const http = require('http');
 const url =  require('url');
 const StringDecoder = require("string_decoder").StringDecoder;
+const enrutador = require('./enrutador');
+
 
 const hostname = '127.0.0.1';
 const port = 4000;
 
-let recursos = {
+global.recursos = {
     mascotas: [
         {tipo:"perro",nombre:"pancho",dueno:"Jhon"},
         {tipo:"perro",nombre:"pancho",dueno:"Jhon"},
@@ -24,7 +26,7 @@ const server = http.createServer((req, res) => {
     const ruta = urlParseada.pathname;
     //3.- quitar slash
     const rutaLimpia = ruta.replace(/^\/+|\/+$/g,'');
-
+    console.log(rutaLimpia);
     //3.1 obtener metodo http
     const metodo = req.method.toLowerCase();
 
@@ -51,9 +53,16 @@ const server = http.createServer((req, res) => {
             buffer = JSON.parse(buffer);
         }
 
+        //3.4.3 revisar sub-rutas
+        if(rutaLimpia.indexOf("/") > -1 ){
+
+            var [ rutaPrincipal, indice] = rutaLimpia.split('/');
+        }
+
         //3.5 ordenar la data
         const data = {
-            ruta: rutaLimpia,
+            indice,
+            ruta: rutaPrincipal || rutaLimpia,
             query,
             metodo,
             headers,
@@ -63,8 +72,8 @@ const server = http.createServer((req, res) => {
         console.log({data});
         //3.6 elegir el manejo de la respuesta/handle
         let handler;
-        if(rutaLimpia && enrutador[rutaLimpia] && enrutador[rutaLimpia][metodo] ){
-            handler = enrutador[rutaLimpia][metodo];
+        if(data.ruta && enrutador[data.ruta] && enrutador[data.ruta][metodo] ){
+            handler = enrutador[data.ruta][metodo];
         }else{
             handler = enrutador.noEncontrada;
         }
@@ -83,29 +92,7 @@ const server = http.createServer((req, res) => {
 });
 
 
-const enrutador = {
-    ruta: (data, callback) => {
-        callback(200, {mensaje: 'esta es /ruta'});
-    },
-    /* 
-    usuarios: (data, callback) => {
-        callback(200, [{nombre: 'usuario1'},{nombre: 'usuario2'}]);
-    },
-    */
-    mascotas: {
-        get: (data, callback) => {
-        callback(200, recursos.mascotas);
-        },
-        post: (data, callback) => {
-            recursos.mascotas.push(data.payload);
-            callback(201, data.payload);
-            }
-    },
 
-    noEncontrada: (data, callback) => {
-        callback(404, {mensaje: 'ruta no encontrada'});
-    }
-}
 
 
 server.listen(port, hostname, () => {
