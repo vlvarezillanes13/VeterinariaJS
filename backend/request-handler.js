@@ -17,6 +17,20 @@ module.exports = http.createServer((req, res) => {
     //3.1 obtener metodo http
     const metodo = req.method.toLowerCase();
 
+    //3.1.1 dar permisos de CORS escribiendo los headers
+    res.setHeader("Access-Control-Allow-Origin","*");
+    res.setHeader(
+        "Access-Control-Request-Methods", 
+        "OPTIONS,GET,POST,PUT,DELETE");
+    res.setHeader("Access-Control-Allow-Headers","*");
+
+    //3.1.2 dar respuesta inmediata cuando el método sea options
+    if(metodo === "options"){
+        res.writeHead(200);
+        res.end();
+        return;
+    }
+    
     //3.2 Query
     const { query = {} } = urlParseada;
 
