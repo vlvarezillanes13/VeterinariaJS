@@ -8,59 +8,80 @@ let form = document.getElementById("form");
 let btnGuardar = document.getElementById("btn-guardar");
 let btnNuevo = document.getElementById("btn-nuevo");
 
-let mascotas = [
-    {
-        tipo:"Gato",
-        nombre:"Manchas",
-        dueno:"Esteban"
-    },
-    {
-        tipo:"Perro",
-        nombre:"Pancho",
-        dueno:"Jhon"
+const url = "http://127.0.0.1:4000/mascotas";
+
+let mascotas = [];
+
+async function listarMascotas(){
+    try{
+        const resp = await fetch(url);
+        const mascotasServer = await resp.json();
+
+        if(Array.isArray(mascotasServer) ){ 
+            mascotas = mascotasServer;
+        }
+        if(mascotasServer.length > 0){
+            const htmlMascotas = mascotas.map((mascota, index) => `<tr>
+                <th scope="row">${index + 1}</th>
+                <td>${mascota.tipo}</td>
+                <td>${mascota.nombre}</td>
+                <td>${mascota.dueno}</td>
+                <td>
+                    <button type="button" class="btn btn-info editar"  data-bs-toggle="modal" data-bs-target="#ModalForm" onclick="editarMascota(${index})"><i class="fas fa-edit"></i></button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" onclick="eliminarMascota(${index})" ><i class="fas fa-trash-alt"></i></button>
+                </td>
+            </tr>`).join("");
+            listaMascotas.innerHTML = htmlMascotas;
+            return;
+        }
+
+        const htmlMascotas = `<tr>
+            <td colspan = "5" style="text-align : center;" > No hay mascotas </td>
+        </tr>`
+
+        listaMascotas.innerHTML = htmlMascotas;
+        //Array.from(document.getElementsByClassName('editar')).forEach((botonEditar,index) => botonEditar.onclick = editar(index));
+
+    }catch(error){
+        document.getElementsByClassName("alert")[0].classList.add('show');
+        document.getElementsByClassName("alert")[0].style.display="block";
     }
-];
-
-function listarMascotas(){
-    solicitarMascotas();
-    const htmlMascotas = mascotas.map((mascota, index) => `<tr>
-        <th scope="row">${index + 1}</th>
-        <td>${mascota.tipo}</td>
-        <td>${mascota.nombre}</td>
-        <td>${mascota.dueno}</td>
-        <td>
-            <div class="btn-group" role="group" aria-label="Basic example">
-                <button type="button" class="btn btn-info editar"  data-bs-toggle="modal" data-bs-target="#ModalForm" onclick="editarMascota(${index})"><i class="fas fa-edit"></i></button>
-                <button type="button" class="btn btn-danger" onclick="eliminarMascota(${index})" ><i class="fas fa-trash-alt"></i></button>
-            </div>
-        </td>
-    </tr>`).join("");
-
-    listaMascotas.innerHTML = htmlMascotas;
-    //Array.from(document.getElementsByClassName('editar')).forEach((botonEditar,index) => botonEditar.onclick = editar(index));
 }
 
-function enviarDatos(e){
-
-    e.preventDefault();
-    const datos = {
-        tipo:tipo.value,
-        nombre:nombre.value,
-        dueno:dueno.value
-    };
-    const accion = btnGuardar.innerHTML;
-
-    switch(accion){
-        case "Editar":
+async function enviarDatos(e){ 
+    try {
+        e.preventDefault();
+        const datos = {
+            tipo:tipo.value,
+            nombre:nombre.value,
+            dueno:dueno.value
+        };
+        const accion = btnGuardar.innerHTML;
+        let method = 'POST';
+        let urlEnvio = url;
+        if( accion == "Editar"){
+            method = 'PUT';
             mascotas[indice.value] = datos;
-            break;
-        default:
-            mascotas.push(datos);
-            break;
-    }
-
-    listarMascotas();
+            urlEnvio = `${url}/${indice.value}`;
+        }
     
+        const respuesta = await fetch(urlEnvio,{
+        method,
+        headers:{
+            'Content-Type' : 'application/json',
+        },
+        body: JSON.stringify(datos),
+        })
+    
+        if( respuesta.ok ){
+            listarMascotas();
+        }
+    } catch (error) {
+        document.getElementsByClassName("alert")[0].classList.add('show');
+        document.getElementsByClassName("alert")[0].style.display="block";
+    }
 }
 
 function editarMascota(index){
@@ -74,9 +95,23 @@ function editarMascota(index){
     indice.value = index;
 }
 
-function eliminarMascota(index){
-    mascotas = mascotas.filter( (mascota, indiceMascota) => indiceMascota !== index);
-    listarMascotas();
+async function eliminarMascota(index){
+    const urlEnvio = `${url}/${index}`;
+    //console.log(urlEnvio);
+    try {
+        const respuesta = await fetch(urlEnvio,{
+        method:'DELETE',
+        })
+        if( respuesta.ok ){
+            listarMascotas();
+        }else{
+            console.log("aaaa");
+        }
+    } catch (error) {
+        document.getElementsByClassName("alert")[0].classList.add('show');
+        document.getElementsByClassName("alert")[0].style.display="block";
+    }
+    //mascotas = mascotas.filter( (_mascota, indiceMascota) => indiceMascota !== index);
 }
 
 function resetModal(){
@@ -89,19 +124,6 @@ function resetModal(){
 }
 
 listarMascotas();
-
-function solicitarMascotas(){
-    fetch("http://127.0.0.1:4000/mascotas")
-    .then((resp) => {
-        if(resp.ok){
-            return resp.json();
-        }
-    }).then((mascotasServer) => {
-        console.log({mascotasServer});
-    });
-}
-
-
 form.onsubmit  = enviarDatos;
 btnGuardar.onclick = enviarDatos;
 btnNuevo.onclick = resetModal;
