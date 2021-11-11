@@ -2,6 +2,8 @@ const http = require('http');
 const recursos = require('./recursos');
 const mascotas = require('./ruta/mascotas');
 const veterinarios = require('./ruta/veterinarios');
+const duenos = require('./ruta/duenos');
+
 
 
 
@@ -16,6 +18,7 @@ module.exports = {
     */
     mascotas: mascotas(recursos.mascotas),
     veterinarios: veterinarios(recursos.veterinarios),
+    duenos: duenos(recursos.duenos),
     noEncontrada: (data, callback) => {
         callback(404, {mensaje: 'ruta no encontrada'});
     }
