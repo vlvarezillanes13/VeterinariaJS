@@ -1,4 +1,4 @@
-module.exports = function mascotas(mascotas){
+module.exports = function mascotasHandler(mascotas){
 
     return {
         get: (data, callback) => {
