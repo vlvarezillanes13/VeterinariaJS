@@ -63,7 +63,7 @@ async function enviarDatos(e){
         let urlEnvio = url;
         if( accion == "Editar"){
             method = 'PUT';
-            mascotas[indice.value] = datos;
+            //mascotas[indice.value] = datos;
             urlEnvio = `${url}/${indice.value}`;
         }
     

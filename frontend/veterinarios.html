@@ -48,9 +48,15 @@
 
         <!-- BOTON NUEVO MODALS -->
         <h2 class="mt-2 mb-2">Veterinarios</h2>
-        <button type="button" id="btn-nuevo" class="btn btn-primary mt-3 mb-3" data-bs-toggle="modal" data-bs-target="#ModalForm">
-            Nuevo
-        </button>
+        <div class="btnAlert">
+            <button type="button" id="btn-nuevo" class="btn btn-primary mt-3 mb-3" data-bs-toggle="modal" data-bs-target="#ModalForm">
+                Nuevo
+            </button>
+            <div class="alert alert-danger alert-dismissible fade" role="alert">
+                <strong>Ooops!!</strong> Algo hicimos mal, porfavor volver a intentar!!
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+        </div>
         <!-- FIN BOTON NUEVO -->
 
         <!-- TABLA veterinarios -->
@@ -58,8 +64,7 @@
             <thead class="table-dark">
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">Identificacion</th>
-                <th scope="col">Pais</th>
+                <th scope="col">Documento</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Apellido</th>
                 <th scope="col"></th>
@@ -90,17 +95,7 @@
 
                 <div class="row mb-2">
                     <div class="col">
-                        <select id="pais" class="form-select" aria-label="Default select example">
-                            <option selected>País</option>
-                            <option value="Chile">Chile</option>
-                            <option value="Argentina">Argentina</option>
-                            <option value="Colombia">Colombia</option>
-                            <option value="Ecuador">Ecuador</option>
-                            <option value="Mexico">Mexico</option>
-                        </select>
-                    </div>
-                    <div class="col">
-                        <input type="text" id="identificacion" name="identificacion" class="form-control" placeholder="Identificacion" aria-label="Identificacion">
+                        <input type="text" id="documento" name="documento" class="form-control" placeholder="Documento" aria-label="Documento">
                     </div>
                 </div>
 
